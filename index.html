@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>100m Grid Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 80px;
+            background: #f4f6f8;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            width: 400px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #2c7be5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 15px;
+            text-align: left;
+        }
+        .code {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c7be5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>100m Grid Code Generator</h2>
+    <button onclick="getLocation()">Get My Grid Code</button>
+
+    <div class="result" id="output"></div>
+</div>
+
+<script>
+const GRID_SIZE_LAT = 0.0009;
+const GRID_SIZE_LNG = 0.0010;
+
+// Delhi bounding box minimum reference
+const DELHI_MIN_LAT = 28.40;
+const DELHI_MIN_LNG = 76.84;
+
+function generateGridCode(lat, lng) {
+    const latIndex = Math.floor((lat - DELHI_MIN_LAT) / GRID_SIZE_LAT);
+    const lngIndex = Math.floor((lng - DELHI_MIN_LNG) / GRID_SIZE_LNG);
+
+    return `DL-${latIndex}-${lngIndex}`;
+}
+
+function getLocation() {
+    const output = document.getElementById("output");
+
+    if (!navigator.geolocation) {
+        output.innerHTML = "Geolocation is not supported by your browser.";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            const gridCode = generateGridCode(lat, lng);
+
+            output.innerHTML = `
+                <p><strong>Latitude:</strong> ${lat}</p>
+                <p><strong>Longitude:</strong> ${lng}</p>
+                <p><strong>100m Grid Code:</strong> 
+                    <span class="code">${gridCode}</span>
+                </p>
+            `;
+        },
+        function(error) {
+            output.innerHTML = "Unable to retrieve location.";
+        }
+    );
+}
+</script>
+
+</body>
+</html>
